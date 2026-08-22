@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกการซื้อของ</title>
+    
+    <!-- 1. นำเข้าฟอนต์ Kanit จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- 2. นำเข้า Tailwind CSS ผ่าน CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 3. ตั้งค่าฟอนต์ Kanit ให้กับทั้งหน้าเว็บ -->
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 min-h-screen">
+    
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-semibold text-center text-blue-600 mb-6">ระบบบันทึกรายการซื้อของ</h1>
+
+        <!-- ส่วนที่ 1: ฟอร์มสำหรับกรอกข้อมูล -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="col-span-1 md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสินค้า</label>
+                <input type="text" id="itemName" placeholder="เช่น ข้าวผัด, น้ำดื่ม..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">หมวดหมู่</label>
+                <select id="itemCategory" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="อาหาร">อาหาร</option>
+                    <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ราคา (บาท)</label>
+                <!-- ใช้ min="0" เพื่อป้องกันการใส่ค่าติดลบเบื้องต้น -->
+                <input type="number" id="itemPrice" min="0" placeholder="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">จำนวน</label>
+                <input type="number" id="itemQty" min="1" value="1" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+        
+        <button onclick="addItem()" class="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition duration-200 mb-8 shadow">
+            + เพิ่มรายการ
+        </button>
+
+        <!-- ส่วนที่ 2: ตารางแสดงรายการสินค้าที่เลือก -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-800 text-white text-sm">
+                        <th class="py-3 px-4 rounded-tl-lg">ชื่อสินค้า</th>
+                        <th class="py-3 px-4">หมวดหมู่</th>
+                        <th class="py-3 px-4 text-right">ราคา/หน่วย</th>
+                        <th class="py-3 px-4 text-right">จำนวน</th>
+                        <th class="py-3 px-4 text-right">รวม (บาท)</th>
+                        <th class="py-3 px-4 rounded-tr-lg text-center">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="cartTableBody">
+                    <!-- ข้อมูลจะถูกสร้างและนำมาใส่ที่นี่ผ่าน JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ส่วนที่ 3: แสดงยอดเงินรวมทั้งหมด -->
+        <div class="mt-6 flex justify-end">
+            <div class="bg-green-50 border border-green-300 text-green-800 px-6 py-4 rounded-lg font-semibold text-lg flex items-center gap-4 shadow-sm">
+                <span>ยอดรวมทั้งสิ้น:</span>
+                <span id="grandTotal" class="text-3xl text-green-700">0.00</span>
+                <span>บาท</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ส่วนที่ 4: JavaScript สำหรับควบคุมการทำงาน -->
+    <script>
+        // สร้างอาร์เรย์ว่างเพื่อจำรายการที่ผู้ใช้เพิ่มเข้ามา
+        let cartItems = [];
+
+        // ฟังก์ชัน 1: ดึงค่าจากฟอร์มและบันทึกลงในอาร์เรย์
+        function addItem() {
+            // อ้างอิงไปยังช่องกรอกข้อมูลต่างๆ
+            const nameInput = document.getElementById('itemName');
+            const categoryInput = document.getElementById('itemCategory');
+            const priceInput = document.getElementById('itemPrice');
+            const qtyInput = document.getElementById('itemQty');
+
+            // อ่านค่าที่พิมพ์เข้ามา
+            const name = nameInput.value.trim();
+            const category = categoryInput.value;
+            const price = parseFloat(priceInput.value); // แปลงข้อความเป็นตัวเลขทศนิยม
+            const qty = parseInt(qtyInput.value);       // แปลงข้อความเป็นจำนวนเต็ม
+
+            // ตรวจสอบความถูกต้องเบื้องต้น (Validation)
+            if (!name) {
+                alert('กรุณากรอกชื่อสินค้าครับ');
+                return;
+            }
+            if (isNaN(price) || price < 0) {
+                alert('กรุณากรอกราคาให้ถูกต้องครับ');
+                return;
+            }
+            if (isNaN(qty) || qty <= 0) {
+                alert('กรุณากรอกจำนวนให้ถูกต้องครับ');
+                return;
+            }
+
+            // สร้างออบเจ็กต์เก็บข้อมูล 1 แถว และคำนวณราคาย่อย (ราคา x จำนวน)
+            const item = {
+                name: name,
+                category: category,
+                price: price,
+                qty: qty,
+                subtotal: price * qty
+            };
+
+            // นำไปต่อท้ายในอาร์เรย์
+            cartItems.push(item);
+
+            // เคลียร์ค่าในช่องกรอก เพื่อให้พร้อมสำหรับพิมพ์ของชิ้นต่อไป
+            nameInput.value = '';
+            priceInput.value = '';
+            qtyInput.value = '1';
+            nameInput.focus();
+
+            // เรียกฟังก์ชันเพื่อวาดตารางใหม่
+            renderTable();
+        }
+
+        // ฟังก์ชัน 2: ลบรายการเมื่อกดปุ่ม "ลบ"
+        function removeItem(index) {
+            cartItems.splice(index, 1); // ตัดข้อมูลตำแหน่งที่ index ออก 1 ตัว
+            renderTable(); // วาดตารางใหม่
+        }
+
+        // ฟังก์ชัน 3: นำข้อมูลจากอาร์เรย์มาสร้างตารางและรวมยอดเงิน
+        function renderTable() {
+            const tableBody = document.getElementById('cartTableBody');
+            const grandTotalDisplay = document.getElementById('grandTotal');
+            
+            tableBody.innerHTML = ''; // ล้างตารางของเก่าทิ้งให้หมดก่อน
+            let grandTotal = 0; // ตั้งค่ายอดรวมเริ่มต้นที่ 0
+
+            // ถ้าไม่มีของในตะกร้า ให้แสดงข้อความแจ้งเตือน
+            if (cartItems.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">ยังไม่มีรายการสินค้า</td></tr>`;
+            }
+
+            // วนลูปอ่านข้อมูลทีละชิ้นเพื่อสร้าง <tr> (แถวตาราง)
+            cartItems.forEach((item, index) => {
+                grandTotal += item.subtotal; // บวกราคาย่อยเข้ากับยอดรวมทั้งหมด
+
+                // กำหนดสีของป้ายหมวดหมู่ให้ต่างกัน
+                let badgeClass = "bg-gray-100 text-gray-700";
+                if (item.category === "อาหาร") badgeClass = "bg-orange-100 text-orange-700 border border-orange-200";
+                else if (item.category === "เครื่องดื่ม") badgeClass = "bg-blue-100 text-blue-700 border border-blue-200";
+
+                const row = document.createElement('tr');
+                row.className = "border-b hover:bg-gray-50 transition";
+
+                // แทรก HTML โครงสร้างแต่ละคอลัมน์ (ใช้ .toFixed(2) เพื่อให้แสดงทศนิยม 2 ตำแหน่ง)
+                row.innerHTML = `
+                    <td class="py-3 px-4">${item.name}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded text-xs ${badgeClass}">${item.category}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right">${item.price.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-right">${item.qty}</td>
+                    <td class="py-3 px-4 text-right font-medium">${item.subtotal.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded transition">ลบ</button>
+                    </td>
+                `;
+                tableBody.appendChild(row); // นำแถวไปใส่ในตาราง
+            });
+
+            // อัปเดตตัวเลขยอดรวม พร้อมใส่ลูกน้ำ (comma) ขั้นหลักพัน
+            grandTotalDisplay.innerText = grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // สั่งให้วาดตารางครั้งแรกทันทีที่เปิดหน้าเว็บ
+        renderTable();
+    </script>
+</body>
+</html>
