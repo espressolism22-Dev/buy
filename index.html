@@ -3,27 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบซื้อภัตราหาร ฝ่ายแต่งตั้ง</title>
-    
-    <!-- 1. นำเข้าฟอนต์ Kanit จาก Google Fonts -->
+    <title>ระบบบันทึกการซื้อของ</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- 2. นำเข้า Tailwind CSS ผ่าน CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 3. ตั้งค่าฟอนต์ Kanit ให้กับทั้งหน้าเว็บ -->
     <style>
-        body {
-            font-family: 'Kanit', sans-serif;
-        }
+        body { font-family: 'Kanit', sans-serif; }
     </style>
 </head>
 <body class="bg-gray-100 p-6 min-h-screen">
     
     <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h1 class="text-4xl font-semibold text-center text-blue-600 mb-6">ระบบซื้อภัตราหาร ฝ่ายแต่งตั้ง</h1>
+        <h1 class="text-3xl font-semibold text-center text-blue-600 mb-6">ระบบภัตราหาร แต่งตั้ง</h1>
 
-        <!-- ส่วนที่ 1: ฟอร์มสำหรับกรอกข้อมูล -->
+        <!-- ส่วนเมนูตัวอย่างที่อัปเดตใหม่ -->
+        <div class="mb-6">
+            <p class="text-sm font-medium text-gray-700 mb-3">ตัวอย่างเมนูยอดฮิต (คลิกเพื่อเลือก):</p>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="fillExample('คะน้าหมูกรอบ', 'อาหาร', 75)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">คะน้าหมูกรอบ (75 บาท)</button>
+                <button onclick="fillExample('คะน้าหมูชิ้น', 'อาหาร', 65)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">คะน้าหมูชิ้น (65 บาท)</button>
+                <button onclick="fillExample('กระเพราขาหมู', 'อาหาร', 80)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">กระเพราขาหมู (80 บาท)</button>
+                <button onclick="fillExample('หมูทอดพริกสด', 'อาหาร', 65)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">หมูทอดพริกสด (65 บาท)</button>
+                <button onclick="fillExample('กระเพราไก่', 'อาหาร', 65)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">กระเพราไก่ (65 บาท)</button>
+                <button onclick="fillExample('หมูกรอบพริกเกลือ', 'อาหาร', 75)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">หมูกรอบพริกเกลือ (75 บาท)</button>
+                <button onclick="fillExample('ข้าวผัดหมู', 'อาหาร', 65)" class="bg-white border border-gray-300 rounded-full px-4 py-1.5 text-sm text-gray-700 hover:bg-orange-50 hover:border-orange-400 hover:text-orange-700 transition shadow-sm">ข้าวผัดหมู (65 บาท)</button>
+            </div>
+        </div>
+
+        <!-- ฟอร์มสำหรับกรอกข้อมูล -->
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div class="col-span-1 md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสินค้า</label>
@@ -39,7 +45,6 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ราคา (บาท)</label>
-                <!-- ใช้ min="0" เพื่อป้องกันการใส่ค่าติดลบเบื้องต้น -->
                 <input type="number" id="itemPrice" min="0" placeholder="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
@@ -52,7 +57,7 @@
             + เพิ่มรายการ
         </button>
 
-        <!-- ส่วนที่ 2: ตารางแสดงรายการสินค้าที่เลือก -->
+        <!-- ตารางแสดงรายการ -->
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -66,12 +71,12 @@
                     </tr>
                 </thead>
                 <tbody id="cartTableBody">
-                    <!-- ข้อมูลจะถูกสร้างและนำมาใส่ที่นี่ผ่าน JavaScript -->
+                    <!-- ข้อมูลถูกสร้างผ่าน JS -->
                 </tbody>
             </table>
         </div>
 
-        <!-- ส่วนที่ 3: แสดงยอดเงินรวมทั้งหมด -->
+        <!-- ยอดเงินรวม -->
         <div class="mt-6 flex justify-end">
             <div class="bg-green-50 border border-green-300 text-green-800 px-6 py-4 rounded-lg font-semibold text-lg flex items-center gap-4 shadow-sm">
                 <span>ยอดรวมทั้งสิ้น:</span>
@@ -81,98 +86,71 @@
         </div>
     </div>
 
-    <!-- ส่วนที่ 4: JavaScript สำหรับควบคุมการทำงาน -->
     <script>
-        // สร้างอาร์เรย์ว่างเพื่อจำรายการที่ผู้ใช้เพิ่มเข้ามา
         let cartItems = [];
 
-        // ฟังก์ชัน 1: ดึงค่าจากฟอร์มและบันทึกลงในอาร์เรย์
+        // ฟังก์ชันนำข้อมูลจากปุ่มตัวอย่างมาเติมในฟอร์ม
+        function fillExample(name, category, price) {
+            document.getElementById('itemName').value = name;
+            document.getElementById('itemCategory').value = category;
+            document.getElementById('itemPrice').value = price;
+            
+            const qtyInput = document.getElementById('itemQty');
+            qtyInput.value = 1;
+            qtyInput.focus(); // โฟกัสที่ช่องจำนวนเพื่อให้พร้อมแก้ไขหรือกด Enter (ถ้ามีการเขียนดักจับ Enter เพิ่ม)
+        }
+
         function addItem() {
-            // อ้างอิงไปยังช่องกรอกข้อมูลต่างๆ
             const nameInput = document.getElementById('itemName');
             const categoryInput = document.getElementById('itemCategory');
             const priceInput = document.getElementById('itemPrice');
             const qtyInput = document.getElementById('itemQty');
 
-            // อ่านค่าที่พิมพ์เข้ามา
             const name = nameInput.value.trim();
             const category = categoryInput.value;
-            const price = parseFloat(priceInput.value); // แปลงข้อความเป็นตัวเลขทศนิยม
-            const qty = parseInt(qtyInput.value);       // แปลงข้อความเป็นจำนวนเต็ม
+            const price = parseFloat(priceInput.value);
+            const qty = parseInt(qtyInput.value);
 
-            // ตรวจสอบความถูกต้องเบื้องต้น (Validation)
-            if (!name) {
-                alert('กรุณากรอกชื่อสินค้าครับ');
-                return;
-            }
-            if (isNaN(price) || price < 0) {
-                alert('กรุณากรอกราคาให้ถูกต้องครับ');
-                return;
-            }
-            if (isNaN(qty) || qty <= 0) {
-                alert('กรุณากรอกจำนวนให้ถูกต้องครับ');
-                return;
-            }
+            if (!name) { alert('กรุณากรอกชื่อสินค้าครับ'); return; }
+            if (isNaN(price) || price < 0) { alert('กรุณากรอกราคาให้ถูกต้องครับ'); return; }
+            if (isNaN(qty) || qty <= 0) { alert('กรุณากรอกจำนวนให้ถูกต้องครับ'); return; }
 
-            // สร้างออบเจ็กต์เก็บข้อมูล 1 แถว และคำนวณราคาย่อย (ราคา x จำนวน)
-            const item = {
-                name: name,
-                category: category,
-                price: price,
-                qty: qty,
-                subtotal: price * qty
-            };
+            cartItems.push({ name, category, price, qty, subtotal: price * qty });
 
-            // นำไปต่อท้ายในอาร์เรย์
-            cartItems.push(item);
-
-            // เคลียร์ค่าในช่องกรอก เพื่อให้พร้อมสำหรับพิมพ์ของชิ้นต่อไป
             nameInput.value = '';
             priceInput.value = '';
             qtyInput.value = '1';
-            nameInput.focus();
-
-            // เรียกฟังก์ชันเพื่อวาดตารางใหม่
+            
             renderTable();
         }
 
-        // ฟังก์ชัน 2: ลบรายการเมื่อกดปุ่ม "ลบ"
         function removeItem(index) {
-            cartItems.splice(index, 1); // ตัดข้อมูลตำแหน่งที่ index ออก 1 ตัว
-            renderTable(); // วาดตารางใหม่
+            cartItems.splice(index, 1);
+            renderTable();
         }
 
-        // ฟังก์ชัน 3: นำข้อมูลจากอาร์เรย์มาสร้างตารางและรวมยอดเงิน
         function renderTable() {
             const tableBody = document.getElementById('cartTableBody');
             const grandTotalDisplay = document.getElementById('grandTotal');
             
-            tableBody.innerHTML = ''; // ล้างตารางของเก่าทิ้งให้หมดก่อน
-            let grandTotal = 0; // ตั้งค่ายอดรวมเริ่มต้นที่ 0
+            tableBody.innerHTML = '';
+            let grandTotal = 0;
 
-            // ถ้าไม่มีของในตะกร้า ให้แสดงข้อความแจ้งเตือน
             if (cartItems.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500">ยังไม่มีรายการสินค้า</td></tr>`;
             }
 
-            // วนลูปอ่านข้อมูลทีละชิ้นเพื่อสร้าง <tr> (แถวตาราง)
             cartItems.forEach((item, index) => {
-                grandTotal += item.subtotal; // บวกราคาย่อยเข้ากับยอดรวมทั้งหมด
-
-                // กำหนดสีของป้ายหมวดหมู่ให้ต่างกัน
-                let badgeClass = "bg-gray-100 text-gray-700";
-                if (item.category === "อาหาร") badgeClass = "bg-orange-100 text-orange-700 border border-orange-200";
-                else if (item.category === "เครื่องดื่ม") badgeClass = "bg-blue-100 text-blue-700 border border-blue-200";
+                grandTotal += item.subtotal;
+                let badgeClass = item.category === "อาหาร" ? "bg-orange-100 text-orange-700 border border-orange-200" : 
+                                 item.category === "เครื่องดื่ม" ? "bg-blue-100 text-blue-700 border border-blue-200" : 
+                                 "bg-gray-100 text-gray-700 border border-gray-200";
 
                 const row = document.createElement('tr');
                 row.className = "border-b hover:bg-gray-50 transition";
-
-                // แทรก HTML โครงสร้างแต่ละคอลัมน์ (ใช้ .toFixed(2) เพื่อให้แสดงทศนิยม 2 ตำแหน่ง)
                 row.innerHTML = `
                     <td class="py-3 px-4">${item.name}</td>
-                    <td class="py-3 px-4">
-                        <span class="px-2 py-1 rounded text-xs ${badgeClass}">${item.category}</span>
-                    </td>
+                    <td class="py-3 px-4"><span class="px-2 py-1 rounded text-xs ${badgeClass}">${item.category}</span></td>
                     <td class="py-3 px-4 text-right">${item.price.toFixed(2)}</td>
                     <td class="py-3 px-4 text-right">${item.qty}</td>
                     <td class="py-3 px-4 text-right font-medium">${item.subtotal.toFixed(2)}</td>
@@ -180,14 +158,12 @@
                         <button onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded transition">ลบ</button>
                     </td>
                 `;
-                tableBody.appendChild(row); // นำแถวไปใส่ในตาราง
+                tableBody.appendChild(row);
             });
 
-            // อัปเดตตัวเลขยอดรวม พร้อมใส่ลูกน้ำ (comma) ขั้นหลักพัน
             grandTotalDisplay.innerText = grandTotal.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
-        // สั่งให้วาดตารางครั้งแรกทันทีที่เปิดหน้าเว็บ
         renderTable();
     </script>
 </body>
