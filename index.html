@@ -187,8 +187,6 @@
         <h2><span>📊</span> สรุปคำสั่งซื้อ</h2>
         <div class="row"><span>จำนวนเมนู</span><b id="sMenu">0 เมนู</b></div>
         <div class="row"><span>จำนวนอาหารทั้งหมด</span><b id="sQty">0 จาน</b></div>
-        <div class="row"><span>ราคาเฉลี่ย / จาน</span><b id="sAvg">0.00 ฿</b></div>
-        <div class="row"><span>เมนูที่แพงที่สุด</span><b id="sMax">-</b></div>
 
         <div class="total">
           <span>ราคารวมทั้งหมด</span>
@@ -248,13 +246,10 @@ function render(){
 
   const totalQty   = items.reduce((s,i) => s + i.qty, 0);
   const totalPrice = items.reduce((s,i) => s + i.price * i.qty, 0);
-  const maxItem    = items.length ? items.reduce((a,b) => b.price > a.price ? b : a) : null;
 
   $('count').textContent  = items.length;
   $('sMenu').textContent  = items.length + ' เมนู';
   $('sQty').textContent   = totalQty + ' จาน';
-  $('sAvg').textContent   = totalQty ? baht(totalPrice / totalQty) : '0.00 ฿';
-  $('sMax').textContent   = maxItem ? `${maxItem.name} (${baht(maxItem.price)})` : '-';
   $('sTotal').textContent = baht(totalPrice);
   $('order').disabled     = items.length === 0;
 
